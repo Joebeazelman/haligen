@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "haligen"
+version = "0.1.0"
+description = ""
+authors = ["Joe Beazelman <joebeazelman@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+haligen = "haligen.generator:app"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+progressbar = "^2.5"
+typer = "^0.6.1"
+colorama = "^0.4.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
+[build-system]
+requires = ["poetry>=1.2.0b1"]
+build-backend = "poetry.masonry.api"
