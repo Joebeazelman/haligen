@@ -158,5 +158,3 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
-dist/haligen-0.1.0-py3-none-any.whl
-dist/haligen-0.1.0.tar.gz

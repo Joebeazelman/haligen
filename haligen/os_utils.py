@@ -5,17 +5,17 @@ from pathlib import Path
 import shutil
 from sre_constants import FAILURE
 import subprocess
-from progressbar import Progressbar, AdaptiveETA, SimpleProgress, Percentage, ETA
+from progressbar import ProgressBar, AdaptiveETA, SimpleProgress, Percentage, ETA
 
 
-def execute_subprocess(cmd_and_args: str, current_working_dir: str):
+def execute_subprocess(cmd_and_args: str, current_working_dir: Path):
     """Widgets that behave differently when length is unknown"""
     widgets = ['[When length is unknown at first]',
                ' Progress: ', SimpleProgress(),
                ', Percent: ', Percentage(),
                ' ', ETA(),
                ' ', AdaptiveETA()]
-    bar = Progressbar(widgets=widgets, maxval=200)
+    bar = ProgressBar(widgets=widgets, maxval=200)
     bar.start()
 
     # Execute some job with multiple lines on stdout:
@@ -24,11 +24,11 @@ def execute_subprocess(cmd_and_args: str, current_working_dir: str):
                              stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
         if e.output.startswith('error: {'):
-            print(e.output)
+            logging.error(e.output)
             error = json.loads(e.output[7:])  # Skip "error: "
-            print(error['code'])
-            print(error['message'])
-            exit(FAILURE)
+            logging.error(error['code'])
+            logging.error(error['message'])
+            exit(-1)
 
     # Lines will be collected in list:
     result = []
@@ -43,40 +43,47 @@ def execute_subprocess(cmd_and_args: str, current_working_dir: str):
         # Read each line:
 
         line = p.stdout.readline()
-        print(line.strip())
+        logging.info(line.strip())
 
         # Add line in list and remove carriage return
         result.append(line.rstrip('\r'))
 
         # When no lines appears:
         if not line:
-            print("\n")
+            logging.info("\n")
             p.stdout.flush()
             break
 
     # Show finish message, it also useful because bar cannot start new line on console, why?
-    print("Finish:")
+    logging.error("Finish:")
     # Results as string:
-    print(''.join(result))
+    logging.error(''.join(result))
 
 
 def execute_command(command):
     try:
-        result = subprocess.run(command, capture_output=True)
+        logging.info("Executing command: %s" % command)
+        logging.info(f"Running command: {command.split(' ')}")
+        result = subprocess.check_output(command.split(' ')).decode('utf-8')
+        logging.info(result)
+        return result
 
     except subprocess.CalledProcessError as e:
         if e.output.startswith('error: {'):
             error = json.loads(e.output[7:])  # Skip "error: "
-            print(error['code'])
-            print(error['message'])
-            exit(FAILURE)
-    return result
+            logging.error(error['code'])
+            logging.error(error['message'])
+            exit(-1)
 
 
-def is_command_in_path_evironment(command):
-    logging.info("Checking if command is in PATH")
-    command_path = shutil.which(command)
-    return Path(command_path).exists()
+def is_utility_in_path_var(utility):
+    logging.info(
+        f"Checking if utility \"{utility}\" is in PATH environment variable.")
+    result = shutil.which(utility)
+    if result is None:
+        logging.info(
+            f"\tUtility \"{utility}\" not found.")
+    return Path(result) if result is not None else None
 
 
 def file_contains(filename: str, content: str):
