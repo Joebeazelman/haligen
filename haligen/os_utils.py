@@ -1,6 +1,7 @@
 # Draw spinner:
 import json
 import logging
+import os
 from pathlib import Path
 import shutil
 from sre_constants import FAILURE
@@ -62,10 +63,8 @@ def execute_subprocess(cmd_and_args: str, current_working_dir: Path):
 
 def execute_command(command):
     try:
-        logging.info("Executing command: %s" % command)
-        logging.info(f"Running command: {command.split(' ')}")
+        logging.info("\t\tExecuting command: %s" % command)
         result = subprocess.check_output(command.split(' ')).decode('utf-8')
-        logging.info(result)
         return result
 
     except subprocess.CalledProcessError as e:
@@ -78,30 +77,51 @@ def execute_command(command):
 
 def is_utility_in_path_var(utility):
     logging.info(
-        f"Checking if utility \"{utility}\" is in PATH environment variable.")
+        f"\t\tChecking if utility \"{utility}\" is in PATH environment variable.")
     result = shutil.which(utility)
     if result is None:
-        logging.info(
-            f"\tUtility \"{utility}\" not found.")
+        try:
+            os.stat(result)
+        except OSError as e:
+            logging.error(
+                f"\t\t\tUtility \"{utility}\" not found in PATH.")
     return Path(result) if result is not None else None
 
 
 def file_contains(filename: str, content: str):
-    with open(filename, 'r') as f:
-        return content in f.read()
+    try:
+        with open(filename, 'r') as f:
+            return content in f.read()
+    except IOError as e:
+        logging.error("Error reading file \"{filename}\". Error: {e}")
+        exit(-1)
 
 
-def insert_lines_into_file(file_name: str, line_index: int, content: str):
-    with open(file_name, "r") as file:
-        lines = file.readlines()
+def insert_lines_into_file(file_path: str, line_index: int, content: str):
+    try:
+        with open(file_path, "r") as file:
+            lines = file.readlines()
+    except IOError as e:
+        logging.error(
+            f"Error reading file \"{os.path.basename(file_path)}\". Error: {e}")
+        exit(-1)
 
     # check if lines are already in the file
     if (lines[line_index] != content.splitlines()[0]):
         lines.insert(line_index, content)
-    else:
-        logging.warning(
-            f"Cannot insert lines into file \"{file_name}\" at line {line_index}. Lines are already inserted.")
 
-    with open(file_name, "w") as file:
-        file.writelines(lines)
-    return 0
+        logging.warning(
+            f"\t\tCannot insert lines into file \"{os.path.basename(file_path)}\" at line {line_index}. Lines are already inserted.")
+    try:
+        with open(file_path, "w") as file:
+            file.writelines(lines)
+    except IOError as e:
+        logging.error(
+            f"Error writing file \"{os.path.basename(file_path)}\". Error: {e}")
+        exit(-1)
+
+    return True
+
+
+def normalize_path(path):
+    return os.path.normpath(path)
