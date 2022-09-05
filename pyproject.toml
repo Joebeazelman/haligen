@@ -13,6 +13,8 @@ python = "^3.10"
 progressbar = "^2.5"
 typer = "^0.6.1"
 colorama = "^0.4.5"
+logdecorator = "^2.4"
+xmltodict = "^0.13.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

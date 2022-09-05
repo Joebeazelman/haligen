@@ -2,6 +2,7 @@ import logging
 import os
 from pathlib import Path
 from haligen.os_utils import execute_subprocess, file_contains, insert_lines_into_file
+from logdecorator import log_on_start, log_on_end, log_on_error, log_exception
 
 
 def init_crate(crate: str, parent_path: str):
@@ -22,7 +23,7 @@ def add_dependency_to_crate(crate, dependency: str, crate_path: Path):
 
 
 def configure_runtime(package_name, crate_path, target: str, runtime: str):
-    content = f"\tfor Target use \"{target}\";\n\tfor Runtime (\"Ada\") use \"${runtime}\";\n"
+    content = f"\tfor Target use \"{target}\";\n\tfor Runtime (\"Ada\") use \"{runtime}\";\n"
     crate_proj_path = os.path.join(crate_path, package_name + ".gpr")
     if is_runtime_configured(crate_proj_path, content):
         return True
@@ -37,7 +38,7 @@ def configure_runtime(package_name, crate_path, target: str, runtime: str):
 
 def is_runtime_configured(crate_proj_path, content):
     # if file already contains inserted lines, then return 0
-    if not file_contains(crate_proj_path, content):
+    if file_contains(crate_proj_path, content):
         logging.info(
             f"New configuration has been inserted successfully into {os.path.basename(crate_proj_path)}.")
         return True
