@@ -5,7 +5,7 @@ from pathlib import Path
 
 import xml.etree.ElementTree as xml_doc
 
-from haligen.os_utils import execute_command, execute_subprocess, is_utility_in_path_var
+from os_utils import execute_command, execute_subprocess, is_utility_in_path_var
 
 
 def is_svd2ada_installed(install_path: Path):
@@ -28,9 +28,7 @@ def is_svd2ada_installed(install_path: Path):
 
 
 def ask_install_svd2ada():
-    user_response = typer.prompt(
-        f"\tWould you like to install to temporarily install it or exit (Yes, or No)?")
-    return user_response
+    return typer.prompt(f"\tWould you like to install to temporarily install it or exit (Yes, or No)?")
 
 
 def install_svd2ada(install_path):
@@ -39,7 +37,7 @@ def install_svd2ada(install_path):
     # first check if SVD2ADA is installed and in PATH environment or installed from previous run
     # return the full path to the installation directory
     execute_subprocess("alr get -b svd2ada", install_path)
-    return install_path+"/bin/svd2ada"
+    return f"{install_path}/bin/svd2ada"
 
 
 def generate_ada_from_svd(svd2ada_executable_path, svd_filepath, crate_path, package_name):
