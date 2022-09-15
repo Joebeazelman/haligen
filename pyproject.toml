@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "haligen"
-version = "0.0.0"
+version = "v0.1.0"
 description = ""
 authors = ["Joe Beazelman <joebeazelman@gmail.com>"]
 readme = "README.md"
