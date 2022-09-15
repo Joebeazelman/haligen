@@ -21,13 +21,12 @@ pytest = "^5.2"
 
 [tool.poetry-dynamic-versioning]
 enable = true
-dirty = true
-format-jinja = "{% if distance == 0 %}{{ base }}{% else %}{{ base }}+{{ distance }}.{{ commit }}{% endif %}"
 vcs = "git"
+style = "semver"
 
 [tool.poetry-dynamic-versioning.substitution]
 
 [build-system]
-requires = ["poetry>=1.2.0b1"]
+requires = ["poetry>=1.2.0b1", "poetry-dynamic-versioning"]
 build-backend = "poetry_dynamic_versioning.backend"
 
