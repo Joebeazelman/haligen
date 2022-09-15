@@ -20,7 +20,7 @@ def is_svd2ada_installed(install_path: Path):
     if Path.is_dir(utility_path):
         logging.info(
             f"\t\tSVD2ADA already installed in \"{utility_path}\" from previous run.")
-    elif (utility_path := is_utility_in_path_var(utility)):
+    elif utility_path := is_utility_in_path_var(utility):
         logging.info(
             f"\t\tUtility \"{utility}\" already exists PATH environment and located at \"{utility_path}\".")
 

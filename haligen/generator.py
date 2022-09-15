@@ -2,7 +2,6 @@ import logging
 import os
 from pathlib import Path
 import shutil
-import tempfile
 from typing import Optional
 import typer
 import haligen
@@ -53,16 +52,16 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
              target_format: str = typer.Argument(
                  "arm-elf", help="Target executable format"),
              runtime: str = typer.Argument(
-                 "zfp-cortex-m0p", help="Runtime for MCU"),
+                 "light-cortex-m0", help="Runtime for MCU"),
              x_compiler: str = typer.Argument(
                  "gnat_arm_elf", help="Cross-compiler for MCU"),
-             package_name: Optional[bool] = typer.Option(
-             None, "--package_name", help="Package name (defaults to name of svd file)"),
+             crate_name: Optional[bool] = typer.Option(
+             None, "--crate_name", help="Crate name (defaults to name of svd file)"),
              version: Optional[bool] = typer.Option(
              None, "--version", "-v", callback=version_callback, help="Displays version information", is_eager=True),
              force: bool = typer.Option(False, "--force", "-f", confirmation_prompt=True, help="Overwrite existing output files", show_default=True)):
     """
-    Code generator for Hardware Abstraction layer (HAL) in Ada from
+    Generates Hardware Abstraction layer (HAL) Library in Ada from
     an SVD hardware specification file.
     """
     working_dir = output_dir
@@ -70,7 +69,7 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
     logging.info(f"Starting tool from directory: {working_dir}")
     svd2ada_executable_path = None
 
-    if (package_name == None):
+    if (crate_name == None):
         package_name = Path(svd_filepath).stem.lower()
         logging.info(f"\"{package_name}\" is chosen as the package name.")
 
@@ -108,4 +107,4 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
 
     # build crate
 
-   # print(svd2ada_path)
+    print(crate_path)

@@ -2,9 +2,9 @@
 import json
 import logging
 import os
+import pathlib
 from pathlib import Path
 import shutil
-from sre_constants import FAILURE
 import subprocess
 from progressbar import ProgressBar, AdaptiveETA, SimpleProgress, Percentage, ETA
 
@@ -21,7 +21,7 @@ def execute_subprocess(cmd_and_args: str, current_working_dir: Path):
 
     # Execute some job with multiple lines on stdout:
     try:
-        p = subprocess.Popen(cmd_and_args, cwd=current_working_dir, shell=True, universal_newlines=True, stdout=subprocess.PIPE,
+        p = subprocess.Popen(cmd_and_args, cwd=current_working_dir, shell=False, universal_newlines=True, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
         if e.output.startswith('error: {'):
@@ -75,7 +75,7 @@ def execute_command(command):
             exit(-1)
 
 
-def is_utility_in_path_var(utility):
+def is_utility_in_path_var(utility: pathlib.Path) -> Path:
     logging.info(
         f"\t\tChecking if utility \"{utility}\" is in PATH environment variable.")
     result = shutil.which(utility)
