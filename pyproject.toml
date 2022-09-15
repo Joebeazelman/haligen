@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "haligen"
-version = "0.0.0.post8.dev0+15af77a.dirty"
+version = "v0.1.0"
 description = ""
 authors = ["Joe Beazelman <joebeazelman@gmail.com>"]
 readme = "README.md"
@@ -15,7 +15,6 @@ typer = "^0.6.1"
 colorama = "^0.4.5"
 xmltodict = "^0.13.0"
 setuptools = "^65.3.0"
-dunamai = "^1.13.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
@@ -23,9 +22,9 @@ pytest = "^5.2"
 [tool.poetry-dynamic-versioning]
 enable = true
 dirty = true
+format = "v{base}+{distance}.{commit}"
 
 [tool.poetry-dynamic-versioning.substitution]
-
 
 [build-system]
 requires = ["poetry>=1.2.0b1"]
