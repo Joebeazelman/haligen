@@ -1,14 +1,15 @@
 import logging
 import os
+import pathlib
 import shutil
 from pathlib import Path
 from typing import Optional
 
 import typer
-
+from svd2ada import ask_install_svd2ada, generate_ada_from_svd, install_svd2ada, is_svd2ada_installed
 from alire import add_dependency_to_crate, build_crate, configure_runtime, init_crate
 from os_utils import normalize_path
-from svd2ada import ask_install_svd2ada, generate_ada_from_svd, install_svd2ada, is_svd2ada_installed
+
 
 logging.basicConfig(level=logging.INFO)
 app = typer.Typer()
@@ -55,7 +56,7 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
              target_format: str = typer.Argument(
                  "arm-elf", help="Target executable format"),
              runtime: str = typer.Argument(
-                 "zfp-cortex-m0p", help="Runtime for MCU"),
+                 "light-cortex-m0p", help="Runtime for MCU"),
              x_compiler: str = typer.Argument(
                  "gnat_arm_elf", help="Cross-compiler for MCU"),
              package_name: Optional[bool] = typer.Option(
@@ -64,7 +65,8 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
     Code generator for Hardware Abstraction layer (HAL) in Ada from
     an SVD hardware specification file.
     """
-    working_dir = output_dir
+    working_dir = os.path.abspath(
+        os.path.expanduser(os.path.expandvars(output_dir)))
 
     logging.info(f"Starting tool from directory: {working_dir}")
 
@@ -74,7 +76,7 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
 
     # For all utilities used by this tool, if they're not accessible by neither
     # the PATH environment variable, nor a previous installation by this tool, then
-    # ask if user want to install it. The cleanup command is provided to delete the
+    # ask if user wants to install it. The cleanup command is provided to delete the
     # temporary installation folder by request of the user.
 
     # svd2ada utility install
@@ -87,23 +89,33 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
             exit(0)  # TODO: Ensure user actions are selectable
 
     # create a new HAL crate for MCU
+    logging.info(f"******* Creating new crate at: {working_dir}")
     crate_path = init_crate(crate_name=package_name, parent_path=working_dir)
 
     # add specified cross-compiler as crate dependency
+    logging.info(
+        f"******* Adding dependency [{x_compiler}] to crate at: {crate_path}")
     add_dependency_to_crate(package_name, x_compiler, crate_path)
 
     # add target executable format and architecture runtime of MCU to crate
     configure_runtime(package_name, crate_path, target_format, runtime)
 
     # perform initial build
+    logging.info(f"******* Builing crate at: {crate_path}")
     build_crate(crate_path)
 
     # generate code from specified SVD
+    logging.info(
+        f"******* Generating code using Svd2Ada file [{svd_filepath}] to crate at: {crate_path}")
     generate_ada_from_svd(svd2ada_executable_path,
                           svd_filepath, crate_path, package_name)
 
     # add_dependency to crate
+    logging.info(
+        f"******* Adding dependency [hal] to crate at: {crate_path}")
     add_dependency_to_crate(package_name, "hal", crate_path)
+
+    logging.info(f"******* Builing crate at: {crate_path}")
     build_crate(crate_path)
 
     # build crate
