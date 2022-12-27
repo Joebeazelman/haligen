@@ -59,8 +59,8 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
                  "light-cortex-m0p", help="Runtime for MCU"),
              x_compiler: str = typer.Argument(
                  "gnat_arm_elf", help="Cross-compiler for MCU"),
-             package_name: Optional[bool] = typer.Option(
-             None, "--package_name", help="Package name (defaults to name of svd file)")):
+             svd_package_name: str = typer.Option(
+             None, "--svd_package_name", help="Svd Package name (defaults to name of svd file)")):
     """
     Code generator for Hardware Abstraction layer (HAL) in Ada from
     an SVD hardware specification file.
@@ -68,11 +68,14 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
     working_dir = os.path.abspath(
         os.path.expanduser(os.path.expandvars(output_dir)))
 
+    package_name: str = Path(svd_filepath).stem.lower()
+
     logging.info(f"Starting tool from directory: {working_dir}")
 
-    if package_name is None:
-        package_name: str = Path(svd_filepath).stem.lower()
-        logging.info(f"\"{package_name}\" is chosen as the package name.")
+    if svd_package_name is None:
+        svd_package_name = package_name
+        logging.info(
+            f"\"{svd_package_name}\" is chosen as the svd package name.")
 
     # For all utilities used by this tool, if they're not accessible by neither
     # the PATH environment variable, nor a previous installation by this tool, then
@@ -108,7 +111,7 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
     logging.info(
         f"******* Generating code using Svd2Ada file [{svd_filepath}] to crate at: {crate_path}")
     generate_ada_from_svd(svd2ada_executable_path,
-                          svd_filepath, crate_path, package_name)
+                          svd_filepath, crate_path, svd_package_name)
 
     # add_dependency to crate
     logging.info(
@@ -119,5 +122,8 @@ def generate(svd_filepath: str = typer.Argument(..., exists=True, file_okay=True
     build_crate(crate_path)
 
     # build crate
-
+#    function RESERVED return CLKSEL_ENUM renames IRC;
     # print(svd2ada_path)
+#
+# poetry run haligen generate /Users/manni/Projects/Repos/haligen/CMSIS-SVD/NXP/LPC176x5x.svd ../../ arm-elf light-cortex-m3 gnat_arm_elf
+#

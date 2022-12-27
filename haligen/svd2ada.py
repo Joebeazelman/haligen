@@ -40,8 +40,8 @@ def install_svd2ada(install_path):
     return f"{install_path}/bin/svd2ada"
 
 
-def generate_ada_from_svd(svd2ada_executable_path, svd_filepath, crate_path, package_name):
-    command = f"\"{svd2ada_executable_path}\" \"{svd_filepath}\" --boolean -o \"{crate_path}/src\" -p {package_name} --base-types-package HAL --gen-uint-always"
+def generate_ada_from_svd(svd2ada_executable_path, svd_filepath, crate_path, svd_package_name):
+    command = f"\"{svd2ada_executable_path}\" \"{svd_filepath}\" --boolean -o \"{crate_path}/src/{svd_package_name}\" -p {svd_package_name} --base-types-package HAL --gen-uint-always"
     logging.info(
         f"\tExecuting command:\n\t\"{command}\"")
     execute_subprocess(command, crate_path)
