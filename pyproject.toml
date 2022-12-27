@@ -14,7 +14,7 @@ progressbar = "^2.5"
 typer = "^0.6.1"
 colorama = "^0.4.5"
 xmltodict = "^0.13.0"
-setuptools = "^65.3.0"
+setuptools = "^65.5.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
