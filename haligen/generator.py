@@ -1,15 +1,13 @@
 import logging
 import os
-import pathlib
 import shutil
-from pathlib import Path
-from typing import Optional
-
+from sys import version_info
 import typer
+
+from pathlib import Path
 from svd2ada import ask_install_svd2ada, generate_ada_from_svd, install_svd2ada, is_svd2ada_installed
 from alire import add_dependency_to_crate, build_crate, configure_runtime, init_crate
 from os_utils import normalize_path
-
 
 logging.basicConfig(level=logging.INFO)
 app = typer.Typer()
@@ -17,10 +15,9 @@ app_root = Path(normalize_path(typer.get_app_dir("haligen")))
 app_working_dir = Path(normalize_path(os.getcwd()))
 app_temp_tool_dir = Path.joinpath(app_root, "tmp_install")
 
-
 def version_callback(value: bool):
     if value:
-        print(f"{__version__}")
+        print(f"{version_info}")
         raise typer.Exit()
 
 

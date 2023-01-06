@@ -6,8 +6,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from progressbar import ProgressBar, AdaptiveETA, SimpleProgress, Percentage, ETA
-
+#from progressbar import ProgressBar, AdaptiveETA, SimpleProgress, Percentage, ETA
 
 def execute_subprocess(cmd_and_args: str, current_working_dir: Path):
     """Widgets that behave differently when length is unknown"""

@@ -1,6 +1,5 @@
 
 import logging
-import typer
 from pathlib import Path
 
 import xml.etree.ElementTree as xml_doc
